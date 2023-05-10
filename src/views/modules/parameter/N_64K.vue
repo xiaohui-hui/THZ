@@ -7,13 +7,14 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量设置</el-button>
+        <el-button type="primary" @click="deleteHandle()" :disabled="dataListSelections.length <= 0" v-loading="dataListLoading1">批量设置</el-button>
       </el-form-item>
     </el-form>
     <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
+      :default-sort = "{prop: 'chId', order: 'ascending'}"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column
@@ -103,6 +104,7 @@ export default {
       pageSize: 10,
       totalPage: 0,
       dataListLoading: false,
+      dataListLoading1: false,
       dataListSelections: [],
       dataFormSearch: {
         devSn: ''
@@ -166,6 +168,7 @@ export default {
     },
     // 批量设置
     deleteHandle () {
+      this.dataListLoading1 = true
       this.$http({
         url: this.$http.adornUrl(`/n64k/set?sn=${this.dataFormSearch.devSn}`),
         method: 'post',
@@ -173,6 +176,7 @@ export default {
           'cardChannelEntities': this.dataListSelections
         })
       }).then(({data}) => {
+        this.dataListLoading1 = false
         if (data && data.code === 0) {
           this.$message({
             message: '操作成功',
