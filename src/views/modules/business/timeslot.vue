@@ -1,5 +1,6 @@
 <template>
   <div class="mod-config">
+<!--    <dProgress :percentage="40" :text-inside="true"  :stroke-height="16"/>-->
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm"  v-loading="dataListLoading1">
 <!--      <el-form-item label="PCM设备">-->
 <!--        <el-input v-model="dataFormSearch.deviceName" placeholder="PCM设备" clearable></el-input>-->
@@ -189,6 +190,7 @@
 </template>
 
 <script>
+// import dProgress from '@/components/progress'
 export default {
   name: 'timeslot',
   data () {
@@ -220,6 +222,9 @@ export default {
         timeSlot: ''
       }
     }
+  },
+  components: {
+    // dProgress
   },
   activated () {
     // 获取设备sn

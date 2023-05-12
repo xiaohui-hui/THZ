@@ -78,6 +78,7 @@
         header-align="center"
         align="center"
         sortable
+        :sort-orders = "['descending','ascending']"
         label="上报时间">
       </el-table-column>
       <el-table-column

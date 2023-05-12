@@ -214,7 +214,7 @@ export default {
         url: this.$http.adornUrl(`/ch/e1set?sn=${this.dataFormSearch.devSn}`),
         method: 'post',
         data: this.$http.adornData({
-          'cardChannelEntities': this.dataListSelections
+          'cardChannelEntities': this.dataList
         })
       }).then(({data}) => {
         this.dataListLoading1 = false

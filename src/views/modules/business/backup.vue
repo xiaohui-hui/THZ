@@ -30,7 +30,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
+<!--        <el-button @click="getDataList()">查询</el-button>-->
         <el-button type="primary" @click="addOrUpdateHandle(dataFormSearch.devSn)" :disabled="dataFormSearch.devSn===''">新增</el-button>
 <!--        <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
         <el-button type="primary" @click="setHandle()" :disabled="dataFormSearch.devSn===''||dataList.length<=0">设置</el-button>

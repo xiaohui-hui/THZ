@@ -620,12 +620,18 @@ export default {
         if (data.code === 0) {
           that.$message({
             message: '设备在线',
-            type: 'success'
+            type: 'success',
+            onClose: () => {
+              that.getDataList()
+            }
           })
         } else {
           that.$message({
             message: '设备不在线',
-            type: 'warning'
+            type: 'warning',
+            onClose: () => {
+              that.getDataList()
+            }
           })
         }
       }).catch(function (err) {

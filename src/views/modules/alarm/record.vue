@@ -16,12 +16,12 @@
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
+<!--      <el-table-column-->
+<!--        type="selection"-->
+<!--        header-align="center"-->
+<!--        align="center"-->
+<!--        width="50">-->
+<!--      </el-table-column>-->
       <el-table-column
         type="index"
         header-align="center"
@@ -67,7 +67,7 @@
         label="处理经过">
       </el-table-column>
       <el-table-column
-        prop="updateTime"
+        prop="recoveryTime"
         header-align="center"
         align="center"
         label="处理时间">
@@ -117,6 +117,7 @@ export default {
           'alarmStatus': '1'
         })
       }).then(({data}) => {
+        console.log(data)
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
