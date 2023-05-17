@@ -6,16 +6,19 @@
     <el-dialog title="详情" :visible.sync="detailsVisible" :close-on-click-modal="false" class="detailDialog">
       <el-card class="box-card" v-loading="dataListLoading" element-loading-text="加载中" element-loading-spinner="el-icon-loading">
         <div class="detailContainer">
-          <el-form :inline="true" :model="detailsForm" ref="detailsForm">
+          <el-form :inline="true" :model="detailsForm" size="mini" ref="detailsForm">
             <el-form-item label="设备名称" prop="deviceName">
               <el-input v-model="detailsForm.deviceName" autocomplete="off" placeholder="设备名称"></el-input>
             </el-form-item>
             <el-form-item label="序列号" prop="serialNumber">
               <el-input v-model="detailsForm.serialNumber" autocomplete="off" placeholder="序列号"></el-input>
             </el-form-item>
-            <!--            <el-form-item>-->
-            <!--              <el-button type="primary" @click="refreshHandle()" :disabled="this.detailsForm.serialNumber===''">强制刷新</el-button>-->
-            <!--            </el-form-item>-->
+            <el-form-item label="状态" >
+              <el-input  v-model="detailsForm.ifOnline" placeholder="状态" readonly></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="refreshHandle()" :disabled="this.detailsForm.serialNumber===''">强制刷新</el-button>
+            </el-form-item>
           </el-form>
           <img src="~@/assets/img/RLT-6600SD.png" alt="">
           <div class="cardWrap">
@@ -291,18 +294,11 @@
           <el-table
             :data="detailsCards"
             style="width: 100%;">
-            <!--            <el-table-column-->
-            <!--              type="index"-->
-            <!--              header-align="center"-->
-            <!--              align="center"-->
-            <!--              label="序号"-->
-            <!--              width="50">-->
-            <!--            </el-table-column>-->
             <el-table-column
-              prop="cardId"
+              type="index"
               header-align="center"
               align="center"
-              label="板卡序号">
+              label="序号">
             </el-table-column>
             <el-table-column
               prop="cardTypeName"
@@ -500,7 +496,8 @@ export default {
       dataListLoading: false,
       detailsForm: {
         deviceName: '',
-        serialNumber: ''
+        serialNumber: '',
+        ifOnline: ''
       },
       detailsCards: [],
       // 存储1~15个板卡序号列表
@@ -550,7 +547,7 @@ export default {
           shadow: false, // 如果为true，则节点使用默认设置投射阴影。
           font: {
             // 字体配置
-            size: 15,
+            size: 12,
             color: '#000',
             align: 'center'
           },
@@ -626,6 +623,14 @@ export default {
         if (e.nodes.length !== 0) {
           let that = this
           let sn = e.nodes[0]
+          this.getModifyData(sn).then(function (data) {
+            console.log(data)
+            if (data.sim.dev.online) {
+              that.detailsForm.ifOnline = '在线'
+            } else {
+              that.detailsForm.ifOnline = '离线'
+            }
+          })
           this.getDeviceRole(sn).then(function (data) {
             console.log(data)
             if (!data.flag) return
@@ -693,8 +698,14 @@ export default {
       this.dataListLoading = true
       let that = this
       this.getDeviceDetails(devSn).then(function (data) {
+        console.log(data)
         that.dataListLoading = false
         that.detailsCards = data.info.cards
+        let index = that.detailsCards.findIndex((item) => {
+          return item.cardId > 7
+        })
+        let temp = that.detailsCards.splice(-2)
+        that.detailsCards.splice(index, 0, temp[0], temp[1])
         that.alarmCards = data.info.alramCards || []
         if (that.detailsCards && that.detailsCards.length > 0) {
           for (let i = 1; i <= 15; i++) {
@@ -730,6 +741,85 @@ export default {
         }
       })
     },
+    // 设备详情强制刷新
+    refreshHandle () {
+      this.detailsCardsList = []
+      this.alarmCardList = []
+      this.detailsCards = []
+      this.dataListLoading = true
+      let that = this
+      this.refreshData(this.detailsForm.serialNumber).then(function () {
+        that.getDeviceDetails(that.detailsForm.serialNumber).then(function (data) {
+          that.dataListLoading = false
+          console.log(data)
+          that.detailsCards = data.info.cards
+          let index = that.detailsCards.findIndex((item) => {
+            return item.cardId > 7
+          })
+          let temp = that.detailsCards.splice(-2)
+          that.detailsCards.splice(index, 0, temp[0], temp[1])
+          that.alarmCards = data.info.alramCards || []
+          if (that.detailsCards && that.detailsCards.length > 0) {
+            for (let i = 1; i <= 15; i++) {
+              let tempEachArr = that.detailsCards.find(function (item) {
+                return item.cardId === i
+              })
+              if (tempEachArr === undefined) {
+                that.detailsCardsList.push('1')
+              } else if (tempEachArr.cardTypeCode.includes('80')) {
+                that.detailsCardsList.push('2')
+              } else if (tempEachArr.cardTypeCode.includes('93')) {
+                that.detailsCardsList.push('3')
+              } else if (tempEachArr.cardTypeCode.includes('07')) {
+                that.detailsCardsList.push('4')
+              }
+            }
+          }
+          if (that.alarmCards && that.alarmCards.length > 0) {
+            for (let i = 1; i <= 17; i++) {
+              let tempEachArr = that.alarmCards.find(function (item) {
+                return item === i
+              })
+              if (tempEachArr === undefined) {
+                that.alarmCardList.push('0')
+              } else {
+                that.alarmCardList.push('1')
+              }
+            }
+          } else {
+            for (let i = 1; i <= 17; i++) {
+              that.alarmCardList.push('0')
+            }
+          }
+        })
+      }).catch((err) => {
+        that.$message({
+          message: err.msg,
+          type: 'error',
+          duration: 2000,
+          onClose: () => {
+            that.dataListLoading = false
+          }
+        })
+      })
+    },
+    // 强制刷新
+    refreshData (devSn) {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl(`/dev/force?sn=${devSn}`),
+          method: 'post',
+          data: this.$http.adornData({
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
+    },
     // 获取设备详情信息
     getDeviceDetails (devSn) {
       return new Promise((resolve, reject) => {
@@ -753,6 +843,24 @@ export default {
       return new Promise((resolve, reject) => {
         this.$http({
           url: this.$http.adornUrl('/tpl/isView'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'sn': devSn
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
+    },
+    // 获取修改信息
+    getModifyData (devSn) {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl('/dev/sim'),
           method: 'get',
           params: this.$http.adornParams({
             'sn': devSn
@@ -804,7 +912,7 @@ export default {
   position: absolute;
   width: 580px;
   height: 245px;
-  top:63px;
+  top:50px;
   left:34px;
   display: flex;
   justify-content: space-between;
@@ -835,7 +943,6 @@ export default {
       margin-left: 2px;
     }
   }
-
 }
 </style>
 <style scoped>

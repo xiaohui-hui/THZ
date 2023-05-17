@@ -7,15 +7,14 @@ const devEnv = require('./dev.env')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     // 代理列表, 是否开启代理通过[./dev.env.js]配置
     proxyTable: devEnv.OPEN_PROXY === false ? {} : {
       '/proxyApi': {
-        target: 'http://192.168.10.209:8010/pcm',
-        // target: 'http://192.168.10.179:8010/pcm',
+        // target: 'http://192.168.10.209:8010/pcm',
+        target: 'http://192.168.10.179:8010/pcm',
         // target: 'http://192.168.10.226:8010/pcm',
         // target: 'http://localhost:8081/pcm',
         changeOrigin: true,

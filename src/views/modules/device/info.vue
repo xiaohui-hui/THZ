@@ -109,7 +109,7 @@
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.devSn)">修改</el-button>
 <!--          <el-button type="text" size="small" @click="empower(scope.row.sdeviceId)">授权</el-button>-->
           <el-button type="text" size="small" @click="deleteHandle(scope.row.devSn)">删除</el-button>
-          <el-button type="text" size="small" @click="nameTestHandle(scope.row.devSn)">点名测试</el-button>
+          <el-button type="text" size="small" @click="nameTestHandle(scope.row.devSn)">在线检测</el-button>
           <el-button type="text" size="small" @click="detailsHandle(scope.row.devSn,scope.row.devName)">详情</el-button>
         </template>
       </el-table-column>
@@ -437,10 +437,10 @@
 <!--              width="50">-->
 <!--            </el-table-column>-->
             <el-table-column
-              prop="cardId"
+              type="index"
               header-align="center"
               align="center"
-              label="板卡序号">
+              label="序号">
             </el-table-column>
             <el-table-column
               prop="cardTypeName"
@@ -637,7 +637,10 @@ export default {
       }).catch(function (err) {
         that.$message({
           message: err.msg,
-          type: 'error'
+          type: 'error',
+          onClose: () => {
+            that.getDataList()
+          }
         })
         that.dataListLoading = false
       })
@@ -652,9 +655,13 @@ export default {
       this.dataListLoading = true
       let that = this
       this.getDeviceDetails(devSn).then(function (data) {
-        console.log(data)
         that.dataListLoading = false
         that.detailsCards = data.info.cards
+        let index = that.detailsCards.findIndex((item) => {
+          return item.cardId > 7
+        })
+        let temp = that.detailsCards.splice(-2)
+        that.detailsCards.splice(index, 0, temp[0], temp[1])
         that.alarmCards = data.info.alramCards || []
         if (that.detailsCards && that.detailsCards.length > 0) {
           for (let i = 1; i <= 15; i++) {
@@ -692,25 +699,61 @@ export default {
     },
     // 设备详情强制刷新
     refreshHandle () {
+      this.detailsCardsList = []
+      this.alarmCardList = []
+      this.detailsCards = []
       this.dataListLoading = true
       let that = this
       this.refreshData(this.detailsForm.serialNumber).then(function () {
-        that.dataListLoading = false
         that.getDeviceDetails(that.detailsForm.serialNumber).then(function (data) {
+          that.dataListLoading = false
           that.detailsCards = data.info.cards
-          for (let i = 1; i <= 15; i++) {
-            let tempEachArr = that.detailsCards.find(function (item) {
-              return item.cardId === i
-            })
-            if (tempEachArr === undefined) {
-              that.detailsCardsList.push('1')
-            } else if (tempEachArr.cardTypeCode.includes('80')) {
-              that.detailsCardsList.push('2')
-            } else if (tempEachArr.cardTypeCode.includes('93')) {
-              that.detailsCardsList.push('3')
-            } else if (tempEachArr.cardTypeCode.includes('07')) {
-              that.detailsCardsList.push('4')
+          let index = that.detailsCards.findIndex((item) => {
+            return item.cardId > 7
+          })
+          let temp = that.detailsCards.splice(-2)
+          that.detailsCards.splice(index, 0, temp[0], temp[1])
+          that.alarmCards = data.info.alramCards || []
+          if (that.detailsCards && that.detailsCards.length > 0) {
+            for (let i = 1; i <= 15; i++) {
+              let tempEachArr = that.detailsCards.find(function (item) {
+                return item.cardId === i
+              })
+              if (tempEachArr === undefined) {
+                that.detailsCardsList.push('1')
+              } else if (tempEachArr.cardTypeCode.includes('80')) {
+                that.detailsCardsList.push('2')
+              } else if (tempEachArr.cardTypeCode.includes('93')) {
+                that.detailsCardsList.push('3')
+              } else if (tempEachArr.cardTypeCode.includes('07')) {
+                that.detailsCardsList.push('4')
+              }
             }
+          }
+          if (that.alarmCards && that.alarmCards.length > 0) {
+            for (let i = 1; i <= 17; i++) {
+              let tempEachArr = that.alarmCards.find(function (item) {
+                return item === i
+              })
+              if (tempEachArr === undefined) {
+                that.alarmCardList.push('0')
+              } else {
+                that.alarmCardList.push('1')
+              }
+            }
+          } else {
+            for (let i = 1; i <= 17; i++) {
+              that.alarmCardList.push('0')
+            }
+          }
+        })
+      }).catch((err) => {
+        that.$message({
+          message: err.msg,
+          type: 'error',
+          duration: 2000,
+          onClose: () => {
+            that.dataListLoading = false
           }
         })
       })

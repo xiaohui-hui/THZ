@@ -1,5 +1,7 @@
 <template>
   <nav class="site-navbar" :class="'site-navbar--' + navbarLayoutType">
+<!--    <websocket></websocket>-->
+    <audio loop :src="src" ref="audio"></audio>
     <div class="site-navbar__header">
       <h1 class="site-navbar__brand" @click="$router.push({ name: 'home' })">
         <a class="site-navbar__brand-lg" href="javascript:;">综合接入设备网管</a>
@@ -17,8 +19,12 @@
       <el-menu
         class="site-navbar__menu site-navbar__menu--right"
         mode="horizontal">
-        <el-menu-item index="4" @click="$router.push({ name: 'alarm-list' })" title="告警">
+        <el-menu-item index="5" @click="$router.push({ name: 'alarm-list' })" title="告警">
           <el-badge :value="alarmValue" class="item"><icon-svg name="alarm" class="alarm"></icon-svg></el-badge>
+        </el-menu-item>
+        <el-menu-item index="4" title="告警声音" @click="videoStatus=!videoStatus">
+          <icon-svg v-if="videoStatus" name="open"></icon-svg>
+          <icon-svg v-else name="close"></icon-svg>
         </el-menu-item>
 <!--        <el-menu-item index="2" @click="$router.push({ name: 'alarm-list' })">-->
 <!--          <el-badge :value="7" class="item"><icon-svg name="alarm2" class="alarm"></icon-svg></el-badge>-->
@@ -50,23 +56,37 @@
 <script>
   import UpdatePassword from './main-navbar-update-password'
   import { clearLoginInfo } from '@/utils'
+  import websocket from '@/components/websocket'
   export default {
     data () {
       return {
+        src: '',
         updatePassowrdVisible: false,
-        alarmValue: 0
+        alarmValue: 0,
+        videoStatus: false
       }
     },
     components: {
-      UpdatePassword
+      UpdatePassword,
+      websocket
     },
-    created () {
+    mounted () {
+      this.src = window.SITE_CONFIG.cdnUrl + '/static/video/warm.MP3'
       let that = this
       this.getAlarm().then(function (data) {
+        console.log(data)
         if (data.alarm) {
           that.alarmValue = data.alarm.alarmCount
         }
       })
+      // setInterval(() => {
+      //   this.getAlarm().then(function (data) {
+      //     if (data.alarm) {
+      //       that.alarmValue = data.alarm.alarmCount
+
+      //     }
+      //   })
+      // }, 5000)
     },
     computed: {
       navbarLayoutType: {
@@ -127,6 +147,17 @@
             }
           })
         })
+      }
+    },
+    watch: {
+      videoStatus (val) {
+        if (val) {
+          if (this.alarmValue > 0) {
+            this.$refs.audio.play()
+          }
+        } else {
+          this.$refs.audio.pause()
+        }
       }
     }
   }

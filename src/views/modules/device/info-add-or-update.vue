@@ -98,6 +98,16 @@
 <script>
   export default {
     data () {
+      let checkAge = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('序列号不能为空'))
+        }
+        if (!this.isNumber(value)) {
+          callback(new Error('格式不正确!'))
+        } else {
+          callback()
+        }
+      }
       return {
         snList: [],
         visible: false,
@@ -121,7 +131,7 @@
         },
         dataRule: {
           deviceSerialNumber: [
-            { required: true, message: '序列号不能为空', trigger: 'blur' }
+            { required: true, validator: checkAge, trigger: 'blur' }
           ],
           deviceType: [
             { required: true, message: '设备型号不能为空', trigger: 'blur' }
@@ -156,6 +166,7 @@
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
+          this.dataForm.deviceName = ''
           this.dataForm.position = ''
           this.dataForm.belongRailway = ''
           this.$http({
@@ -304,6 +315,14 @@
           this.dataForm.deviceIp = ''
           this.dataForm.devicePort = ''
           this.dataForm.deviceGateway = ''
+        }
+      },
+      isNumber (val) {
+        let regPos = /F[0-9]{11}3519/ // 判断是否是数字
+        if (regPos.test(val)) {
+          return true
+        } else {
+          return false
         }
       }
     }

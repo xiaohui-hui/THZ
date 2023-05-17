@@ -1,12 +1,13 @@
 <template>
   <div class="mod-config">
+    <el-progress :percentage="percentage" v-if="jdt"></el-progress>
 <!--    <dProgress :percentage="40" :text-inside="true"  :stroke-height="16"/>-->
-    <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm"  v-loading="dataListLoading1">
+    <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm"  v-loading="dataListLoading1" element-loading-text="请稍等...">
 <!--      <el-form-item label="PCM设备">-->
 <!--        <el-input v-model="dataFormSearch.deviceName" placeholder="PCM设备" clearable></el-input>-->
 <!--      </el-form-item>-->
       <el-form-item label="位置" prop="position">
-        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable>
+        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable :disabled="dataListLoading===true||pos.length===1">
           <el-option value="北京铁路通信技术中心"></el-option>
           <el-option value="北京局"></el-option>
           <el-option value="成都局"></el-option>
@@ -29,19 +30,21 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true">
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="addTimeslotHandle()" :disabled="dataFormSearch.devSn===''">新增</el-button>
-        <el-button type="primary" @click="setHandle()" :disabled="dataList.length<=0">设置</el-button>
+        <el-button type="primary" @click="addTimeslotHandle()" :disabled="dataFormSearch.devSn===''||dataListLoading===true">新增</el-button>
+        <el-button type="danger" @click="deleteALlHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button type="primary" @click="setHandle()" :disabled="dataFormSearch.devSn===''||dataListLoading===true">设置</el-button>
       </el-form-item>
     </el-form>
     <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
+      height="720"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column
@@ -113,7 +116,6 @@
         label="目的时隙">
       </el-table-column>
       <el-table-column
-        fixed="right"
         header-align="center"
         align="center"
         label="操作"
@@ -195,6 +197,10 @@ export default {
   name: 'timeslot',
   data () {
     return {
+      jdt: false,
+      percentage: 0,
+      timeStart: null,
+      pos: [],
       snList: [],
       dataList: [],
       sourceCardList: [],
@@ -227,6 +233,13 @@ export default {
     // dProgress
   },
   activated () {
+    this.pos = []
+    this.getRoleName().then((data) => {
+      if (data.pos.length === 1) {
+        this.pos = data.pos
+        this.dataFormSearch.position = this.pos[0]
+      }
+    })
     // 获取设备sn
     let that = this
     this.getPositionDropdownList().then(function (data) {
@@ -318,6 +331,14 @@ export default {
         return item.srcId !== id
       })
     },
+    // 批量删除
+    deleteALlHandle () {
+      this.dataListSelections.forEach((item) => {
+        this.dataList = this.dataList.filter(function (data) {
+          return data.srcId !== item.srcId
+        })
+      })
+    },
     // 设置保存数据
     setHandle () {
       let that = this
@@ -326,6 +347,7 @@ export default {
         'tsc': this.dataList
       }
       that.dataListLoading1 = true
+      this.jdt = true
       this.setTimeSlotWork(cross).then(function (data) {
         if (data.code === 0) {
           that.$message({
@@ -339,12 +361,16 @@ export default {
           })
         }
         that.dataListLoading1 = false
+        that.percentage = 100
+        that.jdt = false
       }).catch(function (err) {
         that.$message({
           message: err.msg,
           type: 'error'
         })
         that.dataListLoading1 = false
+        that.percentage = 100
+        that.jdt = false
       })
     },
     // 获取设备下拉列表信息(设备sn)
@@ -355,6 +381,23 @@ export default {
           method: 'get',
           params: this.$http.adornParams({
             'railway': this.dataFormSearch.position
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
+    },
+    // 获取角色对应名称
+    getRoleName () {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/role/pos'),
+          method: 'get',
+          params: this.$http.adornParams({
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
@@ -461,7 +504,7 @@ export default {
     // 位置变化
     positionChange () {
       this.dataList = []
-      this.dataFormSearch.devSn = []
+      this.dataFormSearch.devSn = ''
       this.snList = []
       // 获取设备sn
       let that = this
@@ -577,6 +620,32 @@ export default {
           }
         })
       })
+    },
+    increase () {
+      let that = this
+      that.timeStart = setInterval(() => {
+        if (that.percentage < 95) {
+          that.percentage += 5
+        }
+        if (that.percentage > 100) {
+          that.percentage = 100
+        }
+      }, 5000)
+    },
+    increaseend () {
+      let that = this
+      that.percentage = 100
+      clearInterval(this.timeStart)
+    }
+  },
+  watch: {
+    jdt (value) {
+      const that = this
+      if (value) {
+        that.increase()
+      } else {
+        that.increaseend()
+      }
     }
   }
 }

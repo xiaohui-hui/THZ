@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
       <el-form-item label="位置" prop="position">
-        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable>
+        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable :disabled="dataListLoading===true||pos.length===1">
           <el-option value="北京铁路通信技术中心"></el-option>
           <el-option value="北京局"></el-option>
           <el-option value="成都局"></el-option>
@@ -25,21 +25,22 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true">
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
 <!--        <el-button @click="getDataList()">查询</el-button>-->
-        <el-button type="primary" @click="addOrUpdateHandle(dataFormSearch.devSn)" :disabled="dataFormSearch.devSn===''">新增</el-button>
-<!--        <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
-        <el-button type="primary" @click="setHandle()" :disabled="dataFormSearch.devSn===''||dataList.length<=0">设置</el-button>
+        <el-button type="primary" @click="addOrUpdateHandle(dataFormSearch.devSn)" :disabled="dataFormSearch.devSn===''||dataListLoading===true">新增</el-button>
+        <el-button type="danger" @click="deleteALlHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button type="primary" @click="setHandle()" :disabled="dataFormSearch.devSn===''||dataListLoading===true">设置</el-button>
       </el-form-item>
     </el-form>
     <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
+      height="720"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column
@@ -123,7 +124,6 @@
         label="工作通道">
       </el-table-column>
       <el-table-column
-        fixed="right"
         header-align="center"
         align="center"
         label="操作"
@@ -154,6 +154,7 @@ export default {
   name: 'backup',
   data () {
     return {
+      pos: [],
       snList: [],
       dataList: [],
       pageIndex: 1,
@@ -172,6 +173,13 @@ export default {
     AddOrUpdate
   },
   activated () {
+    this.pos = []
+    this.getRoleName().then((data) => {
+      if (data.pos.length === 1) {
+        this.pos = data.pos
+        this.dataFormSearch.position = this.pos[0]
+      }
+    })
     // 获取设备sn
     let that = this
     this.getPositionDropdownList().then(function (data) {
@@ -248,10 +256,18 @@ export default {
         return item.id !== id
       })
     },
+    // 批量删除
+    deleteALlHandle () {
+      this.dataListSelections.forEach((item) => {
+        this.dataList = this.dataList.filter(function (data) {
+          return data.id !== item.id
+        })
+      })
+    },
     // 位置变化
     positionChange () {
       this.dataList = []
-      this.dataFormSearch.devSn = []
+      this.dataFormSearch.devSn = ''
       // 获取设备sn
       let that = this
       this.getPositionDropdownList().then(function (data) {
@@ -326,6 +342,23 @@ export default {
           method: 'post',
           data: this.$http.adornData({
             'e1Baks': data
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
+    },
+    // 获取角色对应名称
+    getRoleName () {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/role/pos'),
+          method: 'get',
+          params: this.$http.adornParams({
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
