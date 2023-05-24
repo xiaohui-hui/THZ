@@ -33,7 +33,6 @@ window.SITE_CONFIG['storeState'] = cloneDeep(store.state)
 
 /* eslint-disable no-new */
 new Vue({
-
   el: '#app',
   router,
   store,

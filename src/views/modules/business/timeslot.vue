@@ -2,10 +2,7 @@
   <div class="mod-config">
     <el-progress :percentage="percentage" v-if="jdt"></el-progress>
 <!--    <dProgress :percentage="40" :text-inside="true"  :stroke-height="16"/>-->
-    <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm"  v-loading="dataListLoading1" element-loading-text="请稍等...">
-<!--      <el-form-item label="PCM设备">-->
-<!--        <el-input v-model="dataFormSearch.deviceName" placeholder="PCM设备" clearable></el-input>-->
-<!--      </el-form-item>-->
+    <el-form :inline="true" :model="dataFormSearch" class="searchForm"  v-loading="dataListLoading1" element-loading-text="请稍等...">
       <el-form-item label="位置" prop="position">
         <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable :disabled="dataListLoading===true||pos.length===1">
           <el-option value="北京铁路通信技术中心"></el-option>
@@ -32,6 +29,16 @@
       <el-form-item label="设备名称" prop="devSn">
         <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true">
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="源板卡">
+        <el-select v-model="dataFormSearch.card" placeholder="源板卡" @change="sourceSearchCardChange" :disabled="dataFormSearch.devSn===''||dataListLoading===true">
+          <el-option :value="item.cardId" :key="item.cardId" v-for="item in sourceSearchCardList"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="源通道">
+        <el-select v-model="dataFormSearch.thoroughfare" placeholder="源通道" @change="thoroughfareSearchCardChange" :disabled="dataFormSearch.card===''||dataListLoading===true">
+          <el-option :label="item" :value="item" :key="item" v-for="item in sourceSearchThoroughfareList"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -197,12 +204,15 @@ export default {
   name: 'timeslot',
   data () {
     return {
+      sourceSearchCardList: [],
+      sourceSearchThoroughfareList: [],
       jdt: false,
       percentage: 0,
       timeStart: null,
       pos: [],
       snList: [],
       dataList: [],
+      dataListAll: [],
       sourceCardList: [],
       sourceThoroughfareList: [],
       sourceTimeSlotList: [],
@@ -215,7 +225,9 @@ export default {
       dataListSelections: [],
       dataFormSearch: {
         devSn: '',
-        position: ''
+        position: '',
+        card: '',
+        thoroughfare: ''
       },
       source: {
         card: '',
@@ -228,9 +240,6 @@ export default {
         timeSlot: ''
       }
     }
-  },
-  components: {
-    // dProgress
   },
   activated () {
     this.pos = []
@@ -269,12 +278,14 @@ export default {
         if (data && data.code === 0) {
           // let originalData = data.sn
           this.dataList = data.sn
+          this.dataListAll = JSON.parse(JSON.stringify(data.sn))
         } else {
           this.$message({
             message: data.msg,
             type: 'error',
             onClose: () => {
               this.dataList = []
+              this.dataListAll = []
               this.dataFormSearch.devSn = ''
             }
           })
@@ -282,17 +293,6 @@ export default {
         this.dataListLoading = false
       })
     },
-    // // 每页数
-    // sizeChangeHandle (val) {
-    //   this.pageSize = val
-    //   this.pageIndex = 1
-    //   this.getDataList()
-    // },
-    // // 当前页
-    // currentChangeHandle (val) {
-    //   this.pageIndex = val
-    //   this.getDataList()
-    // },
     // 多选
     selectionChangeHandle (val) {
       this.dataListSelections = val
@@ -313,21 +313,35 @@ export default {
       this.addTimeslotVisible = false
       let obj = {
         'srcId': Math.floor(Math.random() * 900) + 100,
-        'srcCardId': this.source.card.split('_')[0],
+        'srcCardId': parseInt(this.source.card.split('_')[0]),
         'srcChId': this.source.thoroughfare,
         'srcCardTypeName': this.source.card.split('_')[1],
         'srcTsId': this.source.timeSlot,
-        'dstCardId': this.target.card.split('_')[0],
+        'dstCardId': parseInt(this.target.card.split('_')[0]),
         'dstChId': this.target.thoroughfare,
         'dstTsId': this.target.timeSlot,
         'dstCardTypeName': this.target.card.split('_')[1]
       }
-      this.dataList.unshift(obj)
+      this.dataListAll.unshift(obj)
+      if (this.dataFormSearch.card === '' && this.dataFormSearch.thoroughfare === '') {
+        this.dataList.unshift(obj)
+      } else if (this.dataFormSearch.card !== '' && this.dataFormSearch.thoroughfare === '') {
+        this.dataList = this.dataListAll.filter((item) => {
+          return item.srcCardId === parseInt(this.dataFormSearch.card)
+        })
+      } else if (this.dataFormSearch.card !== '' && this.dataFormSearch.thoroughfare !== '') {
+        this.dataList = this.dataListAll.filter((item) => {
+          return item.srcChId === parseInt(this.dataFormSearch.thoroughfare) && item.srcCardId === parseInt(this.dataFormSearch.card)
+        })
+      }
     },
     // 删除
     deleteHandle (id) {
       // 前端删除 暂存数据
       this.dataList = this.dataList.filter(function (item) {
+        return item.srcId !== id
+      })
+      this.dataListAll = this.dataListAll.filter(function (item) {
         return item.srcId !== id
       })
     },
@@ -337,6 +351,9 @@ export default {
         this.dataList = this.dataList.filter(function (data) {
           return data.srcId !== item.srcId
         })
+        this.dataListAll = this.dataListAll.filter(function (data) {
+          return data.srcId !== item.srcId
+        })
       })
     },
     // 设置保存数据
@@ -344,7 +361,7 @@ export default {
       let that = this
       let cross = {
         'sn': this.dataFormSearch.devSn,
-        'tsc': this.dataList
+        'tsc': this.dataListAll
       }
       that.dataListLoading1 = true
       this.jdt = true
@@ -504,8 +521,13 @@ export default {
     // 位置变化
     positionChange () {
       this.dataList = []
+      this.dataListAll = []
       this.dataFormSearch.devSn = ''
       this.snList = []
+      this.dataFormSearch.card = ''
+      this.dataFormSearch.thoroughfare = ''
+      this.sourceSearchCardList = []
+      this.sourceSearchThoroughfareList = []
       // 获取设备sn
       let that = this
       this.getPositionDropdownList().then(function (data) {
@@ -542,7 +564,34 @@ export default {
       })
     },
     devSnChange () {
+      this.dataListAll = []
+      this.dataList = []
+      this.dataFormSearch.card = ''
+      this.dataFormSearch.thoroughfare = ''
+      this.sourceSearchCardList = []
+      this.sourceSearchThoroughfareList = []
       this.getDataList()
+      let that = this
+      this.getSourceCardList().then(function (data) {
+        that.sourceSearchCardList = data.cardSrcList
+      })
+    },
+    // 源板卡搜索变化
+    sourceSearchCardChange (cardId) {
+      this.dataFormSearch.thoroughfare = ''
+      let thoroughObj = this.sourceSearchCardList.find(function (item) {
+        return item.cardId === cardId
+      })
+      this.sourceSearchThoroughfareList = thoroughObj.chNum
+      this.dataList = this.dataListAll.filter((item) => {
+        return item.srcCardId === cardId
+      })
+    },
+    // 源通道搜索变化
+    thoroughfareSearchCardChange (ch) {
+      this.dataList = this.dataListAll.filter((item) => {
+        return item.srcChId === ch && item.srcCardId === this.dataFormSearch.card
+      })
     },
     // 源板卡变化
     sourceCardChange (cardId) {

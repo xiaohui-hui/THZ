@@ -2,7 +2,8 @@ export default {
   namespaced: true,
   state: {
     id: 0,
-    name: ''
+    name: '',
+    alarmValue: 0
   },
   mutations: {
     updateId (state, id) {
@@ -10,6 +11,12 @@ export default {
     },
     updateName (state, name) {
       state.name = name
+    },
+    setAlarmValue (state, data) {
+      state.alarmValue = data
+    },
+    updateAlarmValue (state, data) {
+      state.alarmValue = data
     }
   }
 }

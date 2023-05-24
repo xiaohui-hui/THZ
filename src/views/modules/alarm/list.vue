@@ -65,7 +65,7 @@
         prop="port"
         header-align="center"
         align="center"
-        label="告警端口">
+        label="告警通道">
       </el-table-column>
       <el-table-column
         prop="alarmReason"
@@ -229,6 +229,7 @@ export default {
     },
     // 确认告警
     confirmAlarmHandle () {
+      this.dataForm.process = ''
       this.visible = true
     },
     // 确认告警提交

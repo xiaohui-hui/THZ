@@ -260,7 +260,18 @@ export default {
             message: '设置成功',
             type: 'success'
           })
+        } else {
+          that.$message({
+            message: data.msg,
+            type: 'error'
+          })
         }
+      }).catch(function (err) {
+        that.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        that.dataListLoading1 = false
       })
     },
     getReportTimeHandle () {
@@ -283,7 +294,18 @@ export default {
                 message: '设置成功',
                 type: 'success'
               })
+            } else {
+              that.$message({
+                message: data.msg,
+                type: 'error'
+              })
             }
+          }).catch(function (err) {
+            that.$message({
+              message: err.msg,
+              type: 'error'
+            })
+            that.dataListLoading2 = false
           })
         } else {
           this.$message({
@@ -308,13 +330,23 @@ export default {
       let that = this
       this.setImpedanceData().then(function (data) {
         that.dataListLoading3 = false
-        console.log(data)
         if (data && data.code === 0) {
           that.$message({
             message: '设置成功',
             type: 'success'
           })
+        } else {
+          that.$message({
+            message: data.msg,
+            type: 'error'
+          })
         }
+      }).catch(function (err) {
+        that.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        that.dataListLoading3 = false
       })
     },
     getSignHandle () {
@@ -330,13 +362,23 @@ export default {
       let that = this
       this.setSignalling().then(function (data) {
         that.dataListLoading4 = false
-        console.log(data)
         if (data && data.code === 0) {
           that.$message({
             message: '设置成功',
             type: 'success'
           })
+        } else {
+          that.$message({
+            message: data.msg,
+            type: 'error'
+          })
         }
+      }).catch(function (err) {
+        that.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        that.dataListLoading4 = false
       })
     },
     getBatteryHandle () {
@@ -369,7 +411,18 @@ export default {
             message: '设置成功',
             type: 'success'
           })
+        } else {
+          that.$message({
+            message: data.msg,
+            type: 'error'
+          })
         }
+      }).catch(function (err) {
+        that.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        that.dataListLoading5 = false
       })
     },
     getOhtHandle () {
@@ -392,7 +445,18 @@ export default {
             message: '设置成功',
             type: 'success'
           })
+        } else {
+          that.$message({
+            message: data.msg,
+            type: 'error'
+          })
         }
+      }).catch(function (err) {
+        that.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        that.dataListLoading6 = false
       })
     },
     // 获取设备下拉列表信息(设备sn)

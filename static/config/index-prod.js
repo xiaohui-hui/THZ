@@ -6,6 +6,8 @@
 
   // api接口请求地址
   window.SITE_CONFIG['baseUrl'] = 'http://192.168.10.189:8010/pcm';
+  // websocket地址
+  window.SITE_CONFIG['websocketUrl'] = '192.168.10.189:8010';
 
   // cdn地址 = 域名 + 版本号
   window.SITE_CONFIG['domain']  = './'; // 域名

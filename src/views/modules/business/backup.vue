@@ -34,6 +34,7 @@
         <el-button type="primary" @click="addOrUpdateHandle(dataFormSearch.devSn)" :disabled="dataFormSearch.devSn===''||dataListLoading===true">新增</el-button>
         <el-button type="danger" @click="deleteALlHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
         <el-button type="primary" @click="setHandle()" :disabled="dataFormSearch.devSn===''||dataListLoading===true">设置</el-button>
+        <el-button type="primary" @click="refreshHandle()" :disabled="dataFormSearch.devSn===''||dataListLoading===true">同步</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -307,6 +308,34 @@ export default {
     devSnChange (devSn) {
       this.getDataList()
     },
+    // 同步
+    refreshHandle () {
+      this.dataListLoading = true
+      this.getRefresh().then((data) => {
+        this.dataListLoading = false
+        console.log(data)
+        if (data.code === 0) {
+          this.$message({
+            message: '设置成功',
+            type: 'success',
+            onClose: () => {
+              this.dataList = data.e1bak
+            }
+          })
+        } else {
+          this.$message({
+            message: data.msg,
+            type: 'error'
+          })
+        }
+      }).catch(function (err) {
+        this.$message({
+          message: err.msg,
+          type: 'error'
+        })
+        this.dataListLoading = false
+      })
+    },
     // 设置E1备份
     setHandle () {
       let that = this
@@ -359,6 +388,24 @@ export default {
           url: this.$http.adornUrl('/sys/role/pos'),
           method: 'get',
           params: this.$http.adornParams({
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
+    },
+    // 获取同步刷新
+    getRefresh () {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl('/e1bak/sync'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'sn': this.dataFormSearch.devSn
           })
         }).then(({data}) => {
           if (data && data.code === 0) {

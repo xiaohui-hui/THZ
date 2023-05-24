@@ -1,6 +1,6 @@
 <template>
   <nav class="site-navbar" :class="'site-navbar--' + navbarLayoutType">
-<!--    <websocket></websocket>-->
+    <websocket @receiveData="receiveData"></websocket>
     <audio loop :src="src" ref="audio"></audio>
     <div class="site-navbar__header">
       <h1 class="site-navbar__brand" @click="$router.push({ name: 'home' })">
@@ -72,13 +72,12 @@
     },
     mounted () {
       this.src = window.SITE_CONFIG.cdnUrl + '/static/video/warm.MP3'
-      let that = this
-      this.getAlarm().then(function (data) {
-        console.log(data)
-        if (data.alarm) {
-          that.alarmValue = data.alarm.alarmCount
-        }
-      })
+      // let that = this
+      // this.getAlarm().then(function (data) {
+      //   if (data.alarm) {
+      //     that.alarmValue = data.alarm.alarmCount
+      //   }
+      // })
       // setInterval(() => {
       //   this.getAlarm().then(function (data) {
       //     if (data.alarm) {
@@ -147,6 +146,9 @@
             }
           })
         })
+      },
+      receiveData (alarmValue) {
+        this.alarmValue = alarmValue
       }
     },
     watch: {
@@ -154,6 +156,8 @@
         if (val) {
           if (this.alarmValue > 0) {
             this.$refs.audio.play()
+          } else {
+            this.videoStatus = false
           }
         } else {
           this.$refs.audio.pause()

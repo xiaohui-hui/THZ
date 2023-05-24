@@ -1,15 +1,12 @@
 <template>
   <div class="mod-config">
-<!--    <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">-->
-<!--      <el-form-item>-->
-<!--        <el-input v-model="dataFormSearch.deviceName" placeholder="设备名称" clearable></el-input>-->
-<!--      </el-form-item>-->
-<!--      &lt;!&ndash;      <el-form-item>&ndash;&gt;-->
-<!--      &lt;!&ndash;        <el-button @click="getDataList()">查询</el-button>&ndash;&gt;-->
-<!--      &lt;!&ndash;        <el-button type="primary" @click="addOrUpdateHandle()">新增</el-button>&ndash;&gt;-->
-<!--      &lt;!&ndash;        <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>&ndash;&gt;-->
-<!--      &lt;!&ndash;      </el-form-item>&ndash;&gt;-->
-<!--    </el-form>-->
+    <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
+      <el-form-item label="设备名称" prop="devSn">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" clearable>
+          <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
     <el-table
       :data="dataList"
       border
@@ -41,6 +38,18 @@
         header-align="center"
         align="center"
         label="设备名称">
+      </el-table-column>
+      <el-table-column
+        prop="devCardNum"
+        header-align="center"
+        align="center"
+        label="告警板卡">
+      </el-table-column>
+      <el-table-column
+        prop="port"
+        header-align="center"
+        align="center"
+        label="告警通道">
       </el-table-column>
       <el-table-column
         prop="alarmReason"
@@ -90,6 +99,7 @@ export default {
   name: 'record',
   data () {
     return {
+      snList: [],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -97,12 +107,24 @@ export default {
       dataListLoading: false,
       dataListSelections: [],
       dataFormSearch: {
-        deviceName: ''
+        devSn: ''
       }
     }
   },
   activated () {
     this.getDataList()
+    // 获取设备sn
+    let that = this
+    this.getDeviceDropdownList().then(function (data) {
+      let obj = data.dp
+      let tempData = Object.keys(obj)
+      that.snList = tempData.map(function (item) {
+        return {
+          sn: item,
+          name: obj[item]
+        }
+      })
+    })
   },
   methods: {
     // 获取数据列表
@@ -114,6 +136,7 @@ export default {
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
+          'devSn': this.dataFormSearch.devSn,
           'alarmStatus': '1'
         })
       }).then(({data}) => {
@@ -127,6 +150,10 @@ export default {
         }
         this.dataListLoading = false
       })
+    },
+    // 设备序列号下拉变化触发
+    devSnChange () {
+      this.getDataList()
     },
     // 每页数
     sizeChangeHandle (val) {
@@ -142,6 +169,23 @@ export default {
     // 多选
     selectionChangeHandle (val) {
       this.dataListSelections = val
+    },
+    // 获取设备下拉列表信息(设备sn)
+    getDeviceDropdownList () {
+      return new Promise((resolve, reject) => {
+        this.$http({
+          url: this.$http.adornUrl('/dev/dp'),
+          method: 'get',
+          params: this.$http.adornParams({
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            resolve(data)
+          } else {
+            reject(data)
+          }
+        })
+      })
     }
   }
 }
