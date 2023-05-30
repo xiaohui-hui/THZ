@@ -106,18 +106,18 @@
           ],
           password: [
             { validator: validatePassword, trigger: 'blur' }
-          ],
+          ]
           // comfirmPassword: [
           //   { validator: validateComfirmPassword, trigger: 'blur' }
           // ],
-          email: [
-            { required: true, message: '邮箱不能为空', trigger: 'blur' },
-            { validator: validateEmail, trigger: 'blur' }
-          ],
-          mobile: [
-            { required: true, message: '手机号不能为空', trigger: 'blur' },
-            { validator: validateMobile, trigger: 'blur' }
-          ]
+          // email: [
+          //   { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          //   { validator: validateEmail, trigger: 'blur' }
+          // ],
+          // mobile: [
+          //   { required: true, message: '手机号不能为空', trigger: 'blur' },
+          //   { validator: validateMobile, trigger: 'blur' }
+          // ]
         }
       }
     },

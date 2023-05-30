@@ -543,8 +543,8 @@ export default {
           shape: 'image',
           image: require('@/assets/img/tuopu.jpg'),
           // fixed: false, // 节点node固定不可移动
-          size: 20, // 节点的大小，
-          shadow: false, // 如果为true，则节点使用默认设置投射阴影。
+          size: 30, // 节点的大小，
+          shadow: false, // 如果为true，则节点使用默认设置投射阴影。  13810357650
           font: {
             // 字体配置
             size: 12,
@@ -566,7 +566,7 @@ export default {
             }
           },
           margin: 5, // 当形状设置为box、circle、database、icon、text；label的边距
-          widthConstraint: 100, // 设置数字，将节点的最小和最大宽度设为该值,当值设为很小的时候，label会换行，节点会保持一个最小值，里边的内容会换行
+          widthConstraint: 200, // 设置数字，将节点的最小和最大宽度设为该值,当值设为很小的时候，label会换行，节点会保持一个最小值，里边的内容会换行
           borderWidth: 1, // 节点边框宽度，单位为px
           borderWidthSelected: 3, // 节点被选中时边框的宽度，单位为px
           labelHighlightBold: false // 确定选择节点时标签是否变为粗体
@@ -596,7 +596,7 @@ export default {
           hover: true, // 鼠标移过后加粗该节点和连接线
           hoverConnectedEdges: true, // 鼠标滑动节点后是否显示连接线
           dragNodes: false, // 是否能拖动节点
-          dragView: false, // 是否能拖动画布
+          dragView: true, // 是否能拖动画布
           selectConnectedEdges: false // 选择节点后是否显示连接线
         },
         layout: {
@@ -604,8 +604,8 @@ export default {
           hierarchical: {
             direction: 'UD', // 分层排序方向
             sortMethod: 'directed', // 分层排序方法
-            levelSeparation: 250, // 不同级别之间的距离
-            nodeSpacing: 150 // 自由轴上节点间的最小距离
+            levelSeparation: 1600, // 不同级别之间的距离
+            nodeSpacing: 200 // 自由轴上节点间的最小距离
           }
         },
         // 计算节点之前斥力，进行自动排列的属性
