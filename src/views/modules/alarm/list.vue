@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" clearable>
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" clearable filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
@@ -194,7 +194,7 @@ export default {
           'alarmStatus': '0'
         })
       }).then(({data}) => {
-        console.log(data)
+        // console.log(data)
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -281,6 +281,19 @@ export default {
           }
         })
       })
+    },
+    receiveData (alarmValue) {
+      this.alarmValue = alarmValue
+    }
+  },
+  computed: {
+    alarmValue: {
+      get () { return this.$store.state.common.websocateAlarmValue }
+    }
+  },
+  watch: {
+    alarmValue () {
+      this.getDataList()
     }
   }
 }

@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>

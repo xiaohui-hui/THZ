@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
@@ -16,12 +16,14 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
+      :row-key="getRowKeys"
       style="width: 100%;">
       <el-table-column
         type="selection"
         header-align="center"
         align="center"
-        width="50">
+        width="50"
+        reserve-selection>
       </el-table-column>
       <el-table-column
         type="index"
@@ -61,7 +63,7 @@
         label="告警屏蔽"
       >
         <template slot-scope="scope">
-          <el-select v-model="scope.row.sta" placeholder="告警屏蔽" clearable>
+          <el-select v-model="scope.row.sta" placeholder="告警屏蔽" clearable @change="alarmChange(scope.row.id,scope.row.sta)">
             <el-option label="屏蔽" value="1"></el-option>
             <el-option label="不屏蔽" value="0"></el-option>
           </el-select>
@@ -73,7 +75,7 @@
         label="Pom Mode"
       >
         <template slot-scope="scope">
-          <el-select v-model="scope.row.pcmMode" placeholder="Pom Mode" clearable>
+          <el-select v-model="scope.row.pcmMode" placeholder="Pom Mode" clearable @change="pcmChange(scope.row.id,scope.row.pcmMode)">
             <el-option label="PCM30" value="0"></el-option>
             <el-option label="PCM31" value="1"></el-option>
           </el-select>
@@ -85,7 +87,7 @@
         label="Loop"
       >
         <template slot-scope="scope">
-          <el-select v-model="scope.row.loop" placeholder="Loop" clearable>
+          <el-select v-model="scope.row.loop" placeholder="Loop" clearable @change="loopChange(scope.row.id,scope.row.loop)">
             <el-option label="不环回" value="0"></el-option>
             <el-option label="线路环回" value="1"></el-option>
             <el-option label="设备环回" value="2"></el-option>
@@ -98,7 +100,7 @@
         label="阻抗"
       >
         <template slot-scope="scope">
-          <el-select v-model="scope.row.impedance" placeholder="阻抗" clearable>
+          <el-select v-model="scope.row.impedance" placeholder="阻抗" clearable @change="impedanceChange(scope.row.id,scope.row.impedance)">
             <el-option label="75" value="0"></el-option>
             <el-option label="120" value="1"></el-option>
           </el-select>
@@ -248,6 +250,77 @@ export default {
           }
         })
       })
+    },
+    alarmChange (id, val) {
+      if (this.dataListSelections.length <= 0) return false
+      const index = this.dataListSelections.findIndex((item) => {
+        return item.id === id
+      })
+      if (index === '-1') return false
+      const serList = this.dataListSelections.map((item) => {
+        return item.id
+      })
+      this.dataList = this.dataList.map((item) => {
+        if (serList.includes(item.id)) {
+          return {...item, sta: val}
+        } else {
+          return item
+        }
+      })
+    },
+    pcmChange (id, val) {
+      if (this.dataListSelections.length <= 0) return false
+      const index = this.dataListSelections.findIndex((item) => {
+        return item.id === id
+      })
+      if (index === '-1') return false
+      const serList = this.dataListSelections.map((item) => {
+        return item.id
+      })
+      this.dataList = this.dataList.map((item) => {
+        if (serList.includes(item.id)) {
+          return {...item, pcmMode: val}
+        } else {
+          return item
+        }
+      })
+    },
+    loopChange (id, val) {
+      if (this.dataListSelections.length <= 0) return false
+      const index = this.dataListSelections.findIndex((item) => {
+        return item.id === id
+      })
+      if (index === '-1') return false
+      const serList = this.dataListSelections.map((item) => {
+        return item.id
+      })
+      this.dataList = this.dataList.map((item) => {
+        if (serList.includes(item.id)) {
+          return {...item, loop: val}
+        } else {
+          return item
+        }
+      })
+    },
+    impedanceChange (id, val) {
+      if (this.dataListSelections.length <= 0) return false
+      const index = this.dataListSelections.findIndex((item) => {
+        return item.id === id
+      })
+      if (index === '-1') return false
+      const serList = this.dataListSelections.map((item) => {
+        return item.id
+      })
+      this.dataList = this.dataList.map((item) => {
+        if (serList.includes(item.id)) {
+          return {...item, impedance: val}
+        } else {
+          return item
+        }
+      })
+    },
+    getRowKeys (row) {
+      return row.id
     }
   }
 }

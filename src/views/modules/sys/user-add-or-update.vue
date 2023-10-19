@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import { isEmail, isMobile } from '@/utils/validate'
+  // import { isEmail, isMobile } from '@/utils/validate'
   export default {
     data () {
       let validatePassword = (rule, value, callback) => {
@@ -69,20 +69,20 @@
       //     callback()
       //   }
       // }
-      let validateEmail = (rule, value, callback) => {
-        if (!isEmail(value)) {
-          callback(new Error('邮箱格式错误'))
-        } else {
-          callback()
-        }
-      }
-      let validateMobile = (rule, value, callback) => {
-        if (!isMobile(value)) {
-          callback(new Error('手机号格式错误'))
-        } else {
-          callback()
-        }
-      }
+      // let validateEmail = (rule, value, callback) => {
+      //   if (!isEmail(value)) {
+      //     callback(new Error('邮箱格式错误'))
+      //   } else {
+      //     callback()
+      //   }
+      // }
+      // let validateMobile = (rule, value, callback) => {
+      //   if (!isMobile(value)) {
+      //     callback(new Error('手机号格式错误'))
+      //   } else {
+      //     callback()
+      //   }
+      // }
       return {
         adminFlag: true,
         visible: false,

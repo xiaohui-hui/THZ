@@ -22,7 +22,7 @@
 <!--          <el-input v-model="dataForm.devSn" placeholder="设备序列号"></el-input>-->
 <!--        </el-form-item>-->
         <el-form-item label="设备名称" prop="devSn">
-          <el-select v-model="dataForm.devSn" placeholder="设备名称">
+          <el-select v-model="dataForm.devSn" placeholder="设备名称" filterable>
             <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
           </el-select>
         </el-form-item>

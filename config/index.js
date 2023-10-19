@@ -14,9 +14,9 @@ module.exports = {
     proxyTable: devEnv.OPEN_PROXY === false ? {} : {
       '/proxyApi': {
         // target: 'http://192.168.10.209:8010/pcm',
-        target: 'http://192.168.10.189:8010/pcm',
+        // target: 'http://192.168.10.189:8010/pcm',
         // target: 'http://192.168.10.226:8010/pcm',
-        // target: 'http://localhost:8081/pcm',
+        target: 'http://localhost:8010/pcm',
         changeOrigin: true,
         pathRewrite: {
           '^/proxyApi': '/'
@@ -24,7 +24,7 @@ module.exports = {
       }
     },
     // Various Dev Server settings
-    host: '192.168.10.190', // can be overwritten by process.env.HOST
+    host: '192.168.10.205', // can be overwritten by process.env.HOST
     port: 8005, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,

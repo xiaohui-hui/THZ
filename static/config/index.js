@@ -5,11 +5,12 @@
   window.SITE_CONFIG = {};
 
   // api接口请求地址
-  window.SITE_CONFIG['baseUrl'] = 'http://localhost:8090/pcm';
-  // window.SITE_CONFIG['baseUrl'] = 'http://192.168.10.180:8090/optical-cable';
+  // window.SITE_CONFIG['baseUrl'] = 'http://localhost:8090/pcm';
+  window.SITE_CONFIG['baseUrl'] = 'http://192.168.10.230:8090/pcm';
   // window.SITE_CONFIG['baseUrl'] = 'http://192.168.10.190:8090/optical-cable';
   // websocket地址
-  window.SITE_CONFIG['websocketUrl'] = '192.168.10.189:8010';
+  window.SITE_CONFIG['websocketUrl'] = '127.0.0.1:8010';
+  // window.SITE_CONFIG["websocketUrl"] = "192.168.10.230:8010";
 
   // cdn地址 = 域名 + 版本号
   window.SITE_CONFIG['domain']  = '.'; // 域名

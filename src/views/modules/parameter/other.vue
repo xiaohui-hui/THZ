@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" :model="dataFormSearch" class="searchForm">
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
@@ -61,7 +61,7 @@
             <h3>话路阻抗</h3>
             <el-form :model="impedance" :rules="impedanceRule" label-width="100px">
               <el-form-item label="FXO" prop="fxo">
-                <el-select v-model="impedance.fxo" placeholder="FXO" clearable>
+                <el-select v-model="impedance.fxo" placeholder="FXO" clearable filterable>
                   <el-option label="600" value="0"></el-option>
                   <el-option label="900" value="1"></el-option>
                   <el-option label="270+(750||150nF) and 275+(780||150nF)" value="2"></el-option>
@@ -80,7 +80,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="FXS" prop="fxs">
-                <el-select v-model="impedance.fxs" placeholder="FXS" clearable>
+                <el-select v-model="impedance.fxs" placeholder="FXS" clearable filterable>
                   <el-option label="600" value="0"></el-option>
                   <el-option label="270+(750||150nF)" value="1"></el-option>
                   <el-option label="370+(620||310nF)" value="2"></el-option>

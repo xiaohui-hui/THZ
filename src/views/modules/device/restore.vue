@@ -7,7 +7,7 @@
       <div>
         <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="120px" v-loading="dataListLoading" element-loading-text="恢复中..." element-loading-spinner="el-icon-loading">
           <el-form-item label="设备名称">
-            <el-select v-model="dataForm.deviceSerialNumber" placeholder="设备名称" @change="devSnChange">
+            <el-select v-model="dataForm.deviceSerialNumber" placeholder="设备名称" @change="devSnChange" filterable>
               <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
             </el-select>
           </el-form-item>

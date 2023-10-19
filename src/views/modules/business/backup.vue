@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" @keyup.enter.native="getDataList()" class="searchForm">
       <el-form-item label="位置" prop="position">
-        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable :disabled="dataListLoading===true||pos.length===1">
+        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" filterable clearable :disabled="dataListLoading===true||pos.length===1">
           <el-option value="北京铁路通信技术中心"></el-option>
           <el-option value="北京局"></el-option>
           <el-option value="成都局"></el-option>
@@ -25,7 +25,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>

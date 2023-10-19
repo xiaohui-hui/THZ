@@ -4,7 +4,7 @@
 <!--    <dProgress :percentage="40" :text-inside="true"  :stroke-height="16"/>-->
     <el-form :inline="true" :model="dataFormSearch" class="searchForm"  v-loading="dataListLoading1" element-loading-text="请稍等...">
       <el-form-item label="位置" prop="position">
-        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" clearable :disabled="dataListLoading===true||pos.length===1">
+        <el-select v-model="dataFormSearch.position" placeholder="位置" @change="positionChange" filterable clearable :disabled="dataListLoading===true||pos.length===1">
           <el-option value="北京铁路通信技术中心"></el-option>
           <el-option value="北京局"></el-option>
           <el-option value="成都局"></el-option>
@@ -27,17 +27,17 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" :disabled="dataListLoading===true" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="源板卡">
-        <el-select v-model="dataFormSearch.card" placeholder="源板卡" @change="sourceSearchCardChange" :disabled="dataFormSearch.devSn===''||dataListLoading===true">
+        <el-select v-model="dataFormSearch.card" placeholder="源板卡" @change="sourceSearchCardChange" :disabled="dataFormSearch.devSn===''||dataListLoading===true" filterable>
           <el-option :value="item.cardId" :key="item.cardId" v-for="item in sourceSearchCardList"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="源通道">
-        <el-select v-model="dataFormSearch.thoroughfare" placeholder="源通道" @change="thoroughfareSearchCardChange" :disabled="dataFormSearch.card===''||dataListLoading===true">
+        <el-select v-model="dataFormSearch.thoroughfare" placeholder="源通道" @change="thoroughfareSearchCardChange" :disabled="dataFormSearch.card===''||dataListLoading===true" filterable>
           <el-option :label="item" :value="item" :key="item" v-for="item in sourceSearchThoroughfareList"></el-option>
         </el-select>
       </el-form-item>
@@ -139,17 +139,17 @@
           <div class="grid-content">
             <el-form :model="source" label-width="80px">
               <el-form-item label="源板卡" prop="card">
-                <el-select v-model="source.card" placeholder="源板卡" @change="sourceCardChange">
+                <el-select v-model="source.card" placeholder="源板卡" @change="sourceCardChange" filterable>
                   <el-option :value="item.cardId+'_'+item.cardTypeName" :key="item.cardId" v-for="item in sourceCardList"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="源通道" prop="thoroughfare">
-                <el-select v-model="source.thoroughfare" placeholder="源通道" @change="thoroughfareCardChange">
+                <el-select v-model="source.thoroughfare" placeholder="源通道" @change="thoroughfareCardChange" filterable>
                   <el-option :label="item" :value="item" :key="item" v-for="item in sourceThoroughfareList"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="源时隙" prop="timeSlot">
-                <el-select v-model="source.timeSlot" placeholder="源时隙">
+                <el-select v-model="source.timeSlot" placeholder="源时隙" filterable>
                   <el-option :label="item.tsId" :value="item.tsId" :key="item.tsId" v-for="item in sourceTimeSlotList"></el-option>
                 </el-select>
               </el-form-item>
@@ -163,17 +163,17 @@
           <div class="grid-content">
             <el-form :model="target" label-width="80px">
               <el-form-item label="目的板卡" prop="card">
-                <el-select v-model="target.card" placeholder="目的板卡" @change="targetCardChange">
+                <el-select v-model="target.card" placeholder="目的板卡" @change="targetCardChange" filterable>
                   <el-option :value="item.cardId+'_'+item.cardTypeName" :key="item.cardId" v-for="item in targetCardList"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="目的通道" prop="thoroughfare">
-                <el-select v-model="target.thoroughfare" placeholder="目的通道" @change="targetThoroughfareCardChange">
+                <el-select v-model="target.thoroughfare" placeholder="目的通道" @change="targetThoroughfareCardChange" filterable>
                   <el-option :label="item" :value="item" :key="item" v-for="item in targetThoroughfareList"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="目的时隙" prop="timeSlot">
-                <el-select v-model="target.timeSlot" placeholder="目的时隙">
+                <el-select v-model="target.timeSlot" placeholder="目的时隙" filterable>
                   <el-option :label="item.tsId" :value="item.tsId" :key="item.tsId" v-for="item in targetTimeSlotList"></el-option>
                 </el-select>
               </el-form-item>

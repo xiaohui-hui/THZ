@@ -62,7 +62,6 @@
       return {
         src: '',
         updatePassowrdVisible: false,
-        alarmValue: 0,
         videoStatus: false
       }
     },
@@ -88,6 +87,9 @@
       // }, 5000)
     },
     computed: {
+      alarmValue: {
+        get () { return this.$store.state.common.websocateAlarmValue }
+      },
       navbarLayoutType: {
         get () { return this.$store.state.common.navbarLayoutType }
       },
@@ -148,7 +150,7 @@
         })
       },
       receiveData (alarmValue) {
-        this.alarmValue = alarmValue
+        this.$store.commit('common/updateAlarmValue', alarmValue)
       }
     },
     watch: {

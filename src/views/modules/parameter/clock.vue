@@ -2,7 +2,7 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataFormSearch" class="searchForm" v-loading="dataListLoading1" element-loading-text="加载中..." element-loading-spinner="el-icon-loading">
       <el-form-item label="设备名称" prop="devSn">
-        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange">
+        <el-select v-model="dataFormSearch.devSn" placeholder="设备名称" @change="devSnChange" filterable>
           <el-option :label="item.name" :value="item.sn" :key="item.sn" v-for="item in snList"></el-option>
         </el-select>
       </el-form-item>
@@ -16,7 +16,7 @@
     <el-divider class="dividerClock"></el-divider>
     <el-form :inline="true" :model="dataFormSet" class="searchForm" v-loading="dataListLoading2" element-loading-text="加载中..." element-loading-spinner="el-icon-loading">
       <el-form-item label="时钟源选择">
-        <el-select v-model="dataFormSet.clock" placeholder="时钟" @change="clockChange" :disabled="dataFormSearch.devSn===''" clearable>
+        <el-select v-model="dataFormSet.clock" placeholder="时钟" @change="clockChange" :disabled="dataFormSearch.devSn===''" clearable filterable>
           <el-option label="本地时钟" value="240"></el-option>
           <el-option label="外部时钟" value="241"></el-option>
           <el-option label="从时钟" value="1"></el-option>

@@ -16,9 +16,14 @@ export default {
     contentIsNeedRefresh: false,
     // 主入口标签页
     mainTabs: [],
-    mainTabsActiveName: ''
+    mainTabsActiveName: '',
+    // websocate告警数
+    websocateAlarmValue: ''
   },
   mutations: {
+    updateAlarmValue (state, val) {
+      state.websocateAlarmValue = val
+    },
     updateDocumentClientHeight (state, height) {
       state.documentClientHeight = height
     },

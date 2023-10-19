@@ -7,42 +7,42 @@
       :visible.sync="visible">
       <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="120px">
         <el-form-item label="主用所在板卡" prop="mainCard">
-          <el-select v-model="dataForm.mainCard" placeholder="主用所在板卡" @change="mainCardChange">
+          <el-select v-model="dataForm.mainCard" placeholder="主用所在板卡" @change="mainCardChange" filterable>
             <el-option :label="item.cardId" :value="item.cardId" :key="item.cardId" v-for="item in mainCardData"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="主用板卡通道" prop="mainThoroughfare">
-          <el-select v-model="dataForm.mainThoroughfare" placeholder="主用板卡通道">
+          <el-select v-model="dataForm.mainThoroughfare" placeholder="主用板卡通道" filterable>
             <el-option :label="item" :value="item" :key="item" v-for="item in mainThoroughfareList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用1所在板卡" prop="backup1Card">
-          <el-select v-model="dataForm.backup1Card" placeholder="备用1所在板卡" @change="backup1CardChange">
+          <el-select v-model="dataForm.backup1Card" placeholder="备用1所在板卡" @change="backup1CardChange" filterable>
             <el-option :label="item.cardId" :value="item.cardId" :key="item.cardId" v-for="item in backup1CardList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用1板卡通道" prop="backup1Thoroughfare">
-          <el-select v-model="dataForm.backup1Thoroughfare" placeholder="备用1板卡通道">
+          <el-select v-model="dataForm.backup1Thoroughfare" placeholder="备用1板卡通道" filterable>
             <el-option :label="item.chId" :value="item.chId" :key="item.chId" v-for="item in backup1ThoroughfareList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用2所在板卡" prop="backup2Card">
-          <el-select v-model="dataForm.backup2Card" placeholder="备用2所在板卡" @change="backup2CardChange">
+          <el-select v-model="dataForm.backup2Card" placeholder="备用2所在板卡" @change="backup2CardChange" filterable>
             <el-option :label="item.cardId" :value="item.cardId" :key="item.cardId" v-for="item in backup2CardList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用2板卡通道" prop="backup2Thoroughfare">
-          <el-select v-model="dataForm.backup2Thoroughfare" placeholder="备用2板卡通道">
+          <el-select v-model="dataForm.backup2Thoroughfare" placeholder="备用2板卡通道" filterable>
             <el-option :label="item.chId" :value="item.chId" :key="item.chId" v-for="item in backup2ThoroughfareList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用3所在板卡" prop="backup3Card">
-          <el-select v-model="dataForm.backup3Card" placeholder="备用3所在板卡" @change="backup3CardChange">
+          <el-select v-model="dataForm.backup3Card" placeholder="备用3所在板卡" @change="backup3CardChange" filterable>
             <el-option :label="item.cardId" :value="item.cardId" :key="item.cardId" v-for="item in backup3CardList"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备用3板卡通道" prop="backup3Thoroughfare">
-          <el-select v-model="dataForm.backup3Thoroughfare" placeholder="备用3板卡通道">
+          <el-select v-model="dataForm.backup3Thoroughfare" placeholder="备用3板卡通道" filterable>
             <el-option :label="item.chId" :value="item.chId" :key="item.chId" v-for="item in backup3ThoroughfareList"></el-option>
           </el-select>
         </el-form-item>
