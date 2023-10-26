@@ -14,9 +14,9 @@ module.exports = {
     proxyTable: devEnv.OPEN_PROXY === false ? {} : {
       '/proxyApi': {
         // target: 'http://192.168.10.209:8010/pcm',
-        // target: 'http://192.168.10.189:8010/pcm',
-        target: 'http://192.168.10.224:8010/pcm',
-        // target: 'http://localhost:8010/pcm',
+        // target: 'http://192.168.10.179:8010/pcm',
+        // target: 'http://192.168.10.224:8010/pcm',
+        target: 'http://localhost:8010/pcm',
         changeOrigin: true,
         pathRewrite: {
           '^/proxyApi': '/'
